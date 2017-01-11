@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="react.min.js"></script>
+    <script src="react-dom.min.js"></script>
+    <script src="babel.js"></script>
+</head>
+<body>
+<div id="id"></div>
+</body>
+<script type="text/babel">
+    class Abc extends React.Component{
+        constructor() {
+            super();
+            this.state = {num: 0};
+        }
+        add() {
+            this.setState((prev) => {
+                return {
+                    num: prev.num + 1
+                }
+            });
+
+
+        }
+        componentDidMount() {
+            this.interval = setInterval(()=>{
+                this.add()
+            },1000);
+        }
+        componentWillUnmount(){
+            clearInterval(this.interval)
+        }
+        render() {
+            return <div>Second: {this.state.num}</div>
+        }
+    }
+    ReactDOM.render(<Abc/>,document.getElementById('id'))
+</script>
+</html>
