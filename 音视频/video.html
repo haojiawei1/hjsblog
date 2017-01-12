@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!--<meta http-equiv="X-UA-Compatible" content="ie=edge">-->
+    <title>Document</title>
+</head>
+<script>
+    window.onload=function(){
+        var audio=document.querySelector("audio");
+        var canvas=document.querySelector("canvas");
+        var cobj=canvas.getContext("2d");
+        var audioObj=new AudioContext();
+        var sources=audioObj.createMediaElementSource(audio);
+//        音频源
+//        分析器
+        var analyser=audioObj.createAnalyser();
+//        音频源->分析器->设备当中；
+        sources.connect(analyser);
+        analyser.connect(audioObj.destination);
+        setInterval(function(){
+            cobj.clearRect(0,0,300,150)
+            var array=new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(array);
+            var bili=array.length/canvas.width;
+            cobj.save();
+            cobj.translate(0,150);
+            cobj.beginPath();
+            for(var i=0;i<array.length;i++){
+                cobj.lineTo(i,-array[i]);
+            }
+            cobj.stroke();
+            cobj.strokeStyle='rgba(255,0,0,0.5)';
+            cobj.restore();
+        },50)
+
+        var progress=document.querySelector(".progress");
+        setInterval(function(){
+//            音频的总长度
+            var audiowidth=audio.duration;
+//            音频的播放长度
+            var audioW=audio.currentTime;
+            bili=audioW/audiowidth*100+"%";
+            progress.style.width=bili;
+        },1000)
+        var play=document.getElementsByTagName("input")[0];
+        var pause=document.getElementsByTagName("input")[1];
+        play.onclick=function(){
+            audio.play();
+        }
+        pause.onclick=function(){
+            audio.pause();
+        }
+    }
+</script>
+<style>
+    .box{
+        width: 200px;height: 5px;border:1px solid red;border-radius: 3px;position: relative;
+    }
+    .progress{
+        position: absolute;height: 100%;width: 0%;left:0;top:0;background: green;
+    }
+</style>
+<body>
+<canvas></canvas>
+<div class="box"><div class="progress"></div></div>
+<br>
+<audio src="杨乃文 - 花房姑娘.mp3"controls="controls"autoplay="autoplay"loop="loop"></audio>
+<br>
+<input type="button"value="播放">
+<input type="button"value="暂停">
+
+</body>
+</html>
